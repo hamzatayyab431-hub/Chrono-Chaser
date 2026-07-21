@@ -7,6 +7,7 @@ import { PersistentState } from '../systems/PersistentState';
 import { Switch } from '../interactables/Switch';
 import { Gate } from '../interactables/Gate';
 import { PressurePlate } from '../interactables/PressurePlate';
+import { GoalZone } from '../interactables/GoalZone';
 import { DeterminismTest, type DeterminismTestResult } from '../systems/DeterminismTest';
 import type { PlayerInput } from '../types/PlayerInput';
 
@@ -22,6 +23,7 @@ export class LevelScene extends Phaser.Scene {
   private switches: Switch[] = [];
   private gates: Gate[] = [];
   private pressurePlates: PressurePlate[] = [];
+  private goalZone!: GoalZone;
 
   // Fixed Timestep Accumulator settings
   private accumulator: number = 0;
@@ -33,6 +35,13 @@ export class LevelScene extends Phaser.Scene {
   private readonly loopDuration: number = 15.0; // 15 seconds
   private remainingSeconds: number = 15.0;
   private loopCount: number = 1;
+  private readonly maxLoops: number = 4;
+
+  // Game State & Overlays
+  private isGameOver: boolean = false;
+  private isVictory: boolean = false;
+  private failureOverlay!: Phaser.GameObjects.Container;
+  private victoryOverlay!: Phaser.GameObjects.Container;
 
   // HUD Elements
   private timerText!: Phaser.GameObjects.Text;
@@ -61,7 +70,7 @@ export class LevelScene extends Phaser.Scene {
 
     // Create Platforms & Level Geometry
     this.platforms = this.physics.add.staticGroup();
-    this.buildTestRoom();
+    this.buildPuzzleRoom();
 
     // Create Live Player
     this.player = new Player(this, 64, 400, 'player-texture');
@@ -81,8 +90,9 @@ export class LevelScene extends Phaser.Scene {
       this.keyT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
     }
 
-    // Set up HUD
+    // Set up HUD & Overlays
     this.setupHUD();
+    this.setupOverlays();
 
     // Start fresh level
     this.restartFullLevel();
@@ -104,6 +114,17 @@ export class LevelScene extends Phaser.Scene {
         ctx.strokeRect(1, 1, 30, 46);
         ctx.fillStyle = '#0A081D';
         ctx.fillRect(18, 10, 10, 8);
+        pCanvas.refresh();
+      }
+    }
+
+    // Alias 'player' texture if used by DeterminismTest
+    if (!this.textures.exists('player')) {
+      const pCanvas = this.textures.createCanvas('player', 32, 48);
+      if (pCanvas) {
+        const ctx = pCanvas.getContext();
+        ctx.fillStyle = '#00F0FF';
+        ctx.fillRect(0, 0, 32, 48);
         pCanvas.refresh();
       }
     }
@@ -164,9 +185,27 @@ export class LevelScene extends Phaser.Scene {
         plCanvas.refresh();
       }
     }
+
+    // Goal Zone Texture: 48x64 glowing portal
+    if (!this.textures.exists('goal-texture')) {
+      const gCanvas = this.textures.createCanvas('goal-texture', 48, 64);
+      if (gCanvas) {
+        const ctx = gCanvas.getContext();
+        ctx.fillStyle = '#00FF66';
+        ctx.fillRect(0, 0, 48, 64);
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(2, 2, 44, 60);
+        ctx.fillStyle = '#121026';
+        ctx.fillRect(8, 8, 32, 48);
+        ctx.fillStyle = '#00FF66';
+        ctx.fillRect(14, 14, 20, 36);
+        gCanvas.refresh();
+      }
+    }
   }
 
-  private buildTestRoom(): void {
+  private buildPuzzleRoom(): void {
     // Floor
     for (let x = 16; x <= 784; x += 32) {
       this.platforms.create(x, 584, 'block-texture').refreshBody();
@@ -183,51 +222,58 @@ export class LevelScene extends Phaser.Scene {
       this.platforms.create(x, 16, 'block-texture').refreshBody();
     }
 
-    // Middle Floating Platform
-    for (let x = 250; x <= 450; x += 32) {
-      this.platforms.create(x, 440, 'block-texture').refreshBody();
+    // Low Step Platform (Left side)
+    for (let x = 120; x <= 180; x += 32) {
+      this.platforms.create(x, 480, 'block-texture').refreshBody();
     }
 
-    // High Right Platform
-    for (let x = 580; x <= 700; x += 32) {
-      this.platforms.create(x, 300, 'block-texture').refreshBody();
+    // Middle Floating Platform (Plate A sits here)
+    for (let x = 250; x <= 450; x += 32) {
+      this.platforms.create(x, 400, 'block-texture').refreshBody();
+    }
+
+    // Middle Step Platform (Between Middle and High platforms)
+    for (let x = 490; x <= 530; x += 32) {
+      this.platforms.create(x, 340, 'block-texture').refreshBody();
+    }
+
+    // High Right Platform (Gate-Goal and GoalZone sit here)
+    for (let x = 580; x <= 760; x += 32) {
+      this.platforms.create(x, 280, 'block-texture').refreshBody();
     }
 
     // --- INTERACTABLES SETUP ---
 
-    // 1. One-Way Latch Switch 1 at x=350, y=408 (on middle platform) -> controls Gate 1
-    const sw1 = new Switch(this, 350, 408, {
-      id: 'switch-1',
-      persistentState: this.persistentState,
-      textureKey: 'switch-texture',
-    });
-    this.switches.push(sw1);
-
-    // 2. Gate 1 blocking access to High Right Platform at x=530, y=368 -> controlled by switch-1
-    const gate1 = new Gate(this, 530, 368, {
-      id: 'gate-1',
-      controlId: 'switch-1',
-      persistentState: this.persistentState,
-      textureKey: 'gate-texture',
-    });
-    this.gates.push(gate1);
-
-    // 3. Pressure Plate 1 on Floor at x=400, y=562 -> controls plate-1 state
-    const plate1 = new PressurePlate(this, 400, 562, {
-      id: 'plate-1',
+    // 1. Plate A on Middle Platform (x=350, y=378)
+    const plateA = new PressurePlate(this, 350, 378, {
+      id: 'plate-a',
       persistentState: this.persistentState,
       textureKey: 'plate-texture',
     });
-    this.pressurePlates.push(plate1);
+    this.pressurePlates.push(plateA);
 
-    // 4. Gate 2 on floor right side x=720, y=520 -> controlled by plate-1
-    const gate2 = new Gate(this, 720, 520, {
-      id: 'gate-2',
-      controlId: 'plate-1',
+    // 2. Plate B on Floor (x=450, y=562)
+    const plateB = new PressurePlate(this, 450, 562, {
+      id: 'plate-b',
+      persistentState: this.persistentState,
+      textureKey: 'plate-texture',
+    });
+    this.pressurePlates.push(plateB);
+
+    // 3. Gate-Goal on High Right Platform (x=620, y=216) -> requires both Plate A AND Plate B to latch open
+    const gateGoal = new Gate(this, 620, 216, {
+      id: 'gate-goal',
+      controlId: 'gate-goal',
       persistentState: this.persistentState,
       textureKey: 'gate-texture',
     });
-    this.gates.push(gate2);
+    this.gates.push(gateGoal);
+
+    // 4. GoalZone at x=720, y=240
+    this.goalZone = new GoalZone(this, 720, 240, {
+      id: 'goal-zone',
+      textureKey: 'goal-texture',
+    });
   }
 
   private setupHUD(): void {
@@ -246,7 +292,7 @@ export class LevelScene extends Phaser.Scene {
       color: '#FFDF00',
     });
 
-    this.loopText = this.add.text(210, 22, 'LOOP: 1', textStyle);
+    this.loopText = this.add.text(210, 22, 'LOOP: 1/4', textStyle);
     this.ghostCountText = this.add.text(320, 22, 'GHOSTS: 0', {
       fontFamily: 'monospace',
       fontSize: '15px',
@@ -273,6 +319,74 @@ export class LevelScene extends Phaser.Scene {
     );
   }
 
+  private setupOverlays(): void {
+    // Failure Overlay Container (Max Loops Expired)
+    this.failureOverlay = this.add.container(0, 0);
+    const failBg = this.add.rectangle(400, 300, 800, 600, 0x0a081d, 0.85);
+    const failBox = this.add.rectangle(400, 300, 540, 250, 0x1a0a1a)
+      .setStrokeStyle(3, 0xff3366);
+
+    const failTitle = this.add.text(400, 215, 'TIME PARADOX DETECTED', {
+      fontFamily: 'monospace',
+      fontSize: '24px',
+      color: '#FF3366',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+
+    const failSub = this.add.text(400, 260, 'MAX LOOPS EXPIRED (4/4 LOOPS USED)', {
+      fontFamily: 'monospace',
+      fontSize: '16px',
+      color: '#FFFFFF',
+    }).setOrigin(0.5);
+
+    const failDesc = this.add.text(400, 295, 'All temporal attempts exhausted without reaching the Goal.', {
+      fontFamily: 'monospace',
+      fontSize: '13px',
+      color: '#A0A0C0',
+    }).setOrigin(0.5);
+
+    const failPrompt = this.add.text(400, 350, 'Press [ R ] to Restart Level Timeline', {
+      fontFamily: 'monospace',
+      fontSize: '16px',
+      color: '#00F0FF',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+
+    this.failureOverlay.add([failBg, failBox, failTitle, failSub, failDesc, failPrompt]);
+    this.failureOverlay.setDepth(100);
+    this.failureOverlay.setVisible(false);
+
+    // Victory Overlay Container
+    this.victoryOverlay = this.add.container(0, 0);
+    const vicBg = this.add.rectangle(400, 300, 800, 600, 0x0a081d, 0.85);
+    const vicBox = this.add.rectangle(400, 300, 540, 250, 0x081a14)
+      .setStrokeStyle(3, 0x00ff66);
+
+    const vicTitle = this.add.text(400, 215, 'PARADOX SOLVED!', {
+      fontFamily: 'monospace',
+      fontSize: '26px',
+      color: '#00FF66',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+
+    const vicSub = this.add.text(400, 260, 'Temporal Goal Reached Successfully!', {
+      fontFamily: 'monospace',
+      fontSize: '16px',
+      color: '#FFFFFF',
+    }).setOrigin(0.5);
+
+    const vicPrompt = this.add.text(400, 350, 'Press [ R ] to Play Again', {
+      fontFamily: 'monospace',
+      fontSize: '16px',
+      color: '#00F0FF',
+      fontStyle: 'bold',
+    }).setOrigin(0.5);
+
+    this.victoryOverlay.add([vicBg, vicBox, vicTitle, vicSub, vicPrompt]);
+    this.victoryOverlay.setDepth(100);
+    this.victoryOverlay.setVisible(false);
+  }
+
   private runSmokeTest(): void {
     const result: DeterminismTestResult = DeterminismTest.runTest(this);
     if (result.passed) {
@@ -290,19 +404,40 @@ export class LevelScene extends Phaser.Scene {
     this.gates.forEach((gate) => gate.syncState());
     this.switches.forEach((sw) => sw.syncState());
     this.pressurePlates.forEach((plate) => plate.syncState());
+    if (this.goalZone) {
+      this.goalZone.setUnlocked(this.persistentState.getState('gate-goal'));
+    }
+  }
+
+  private triggerMaxLoopFailure(): void {
+    this.isGameOver = true;
+    this.failureOverlay.setVisible(true);
+    this.testStatusText.setText('Status: MAX LOOPS EXPIRED').setColor('#FF3366');
+  }
+
+  private triggerVictory(): void {
+    this.isVictory = true;
+    this.victoryOverlay.setVisible(true);
+    this.testStatusText.setText('Status: PARADOX SOLVED!').setColor('#00FF66');
   }
 
   private prepareNextLoop(): void {
     // 1. Finalize current loop's recording
     this.loopManager.finalizeLoop();
 
-    // 2. Increment loop count
+    // 2. Check if max loops (4) have expired
+    if (this.loopManager.getCompletedLoopCount() >= this.maxLoops) {
+      this.triggerMaxLoopFailure();
+      return;
+    }
+
+    // 3. Increment loop count
     this.loopCount++;
 
-    // 3. Destroy active ghosts (clean lifecycle)
+    // 4. Destroy active ghosts (clean lifecycle)
     this.destroyActiveGhosts();
 
-    // 4. Spawn ghosts for all previously recorded loops
+    // 5. Spawn N-1 ghosts for Loop N from LoopManager completed recordings
     const completedLoops = this.loopManager.getCompletedLoopCount();
     for (let i = 0; i < completedLoops; i++) {
       const ghost = new Ghost(this, 64, 400, i + 1, 'player-texture');
@@ -313,17 +448,22 @@ export class LevelScene extends Phaser.Scene {
       this.ghosts.push(ghost);
     }
 
-    // 5. Reset live player and state variables
+    // 6. Reset live player and state variables
     this.player.resetTo(64, 400);
     this.remainingSeconds = this.loopDuration;
     this.currentTick = 0;
     this.inputRecorder.reset();
 
-    // 6. Pre-tick Sync of all gates and interactables from PersistentState
+    // 7. Pre-tick Sync of all gates and interactables from PersistentState
     this.syncAllInteractablesPreTick();
   }
 
   private restartFullLevel(): void {
+    this.isGameOver = false;
+    this.isVictory = false;
+    if (this.failureOverlay) this.failureOverlay.setVisible(false);
+    if (this.victoryOverlay) this.victoryOverlay.setVisible(false);
+
     this.loopManager.clearAllHistory();
     this.persistentState.resetAll();
     this.destroyActiveGhosts();
@@ -346,6 +486,11 @@ export class LevelScene extends Phaser.Scene {
     // Hotkey: R -> Restart level & clear all ghosts and persistent state
     if (this.keyR && Phaser.Input.Keyboard.JustDown(this.keyR)) {
       this.restartFullLevel();
+      return;
+    }
+
+    // Stop physics simulation if level is completed or max loops expired
+    if (this.isGameOver || this.isVictory) {
       return;
     }
 
@@ -379,6 +524,16 @@ export class LevelScene extends Phaser.Scene {
 
       // --- STEP 3: Post-step Overlaps & PersistentState Updates ---
       this.evaluateInteractables(liveInput, ghostInputs);
+
+      // --- STEP 4: Check Goal Zone Victory condition ---
+      const isGoalUnlocked = this.persistentState.getState('gate-goal');
+      if (this.goalZone) {
+        this.goalZone.setUnlocked(isGoalUnlocked);
+      }
+      if (isGoalUnlocked && this.physics.overlap(this.player, this.goalZone)) {
+        this.triggerVictory();
+        break;
+      }
 
       this.currentTick++;
       this.remainingSeconds -= 1 / 60;
@@ -422,19 +577,26 @@ export class LevelScene extends Phaser.Scene {
       });
     });
 
-    // Evaluate Pressure Plates
+    // Evaluate Pressure Plates across all actors (Live Player + Ghosts)
     this.pressurePlates.forEach((plate) => {
       const overlappingCount = allActors.filter((actor) =>
         this.physics.overlap(actor, plate)
       ).length;
       plate.evaluateOverlaps(overlappingCount);
     });
+
+    // Latch Gate-Goal open if both Plate A AND Plate B are active simultaneously
+    const plateAActive = this.persistentState.getState('plate-a');
+    const plateBActive = this.persistentState.getState('plate-b');
+    if (plateAActive && plateBActive) {
+      this.persistentState.setState('gate-goal', true);
+    }
   }
 
   private updateHUD(): void {
     const displayTime = Math.max(0, this.remainingSeconds).toFixed(2);
     this.timerText.setText(`TIME: ${displayTime}s`);
-    this.loopText.setText(`LOOP: ${this.loopCount}`);
+    this.loopText.setText(`LOOP: ${this.loopCount}/4`);
     this.ghostCountText.setText(`GHOSTS: ${this.ghosts.length}`);
     this.ticksText.setText(`TICKS: ${this.currentTick}`);
   }
