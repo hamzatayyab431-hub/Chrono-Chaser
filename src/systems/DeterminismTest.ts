@@ -12,7 +12,7 @@ export interface DeterminismTestResult {
 
 export class DeterminismTest {
   public static runTest(scene: Phaser.Scene): DeterminismTestResult {
-    // Generate 180 ticks (~3 seconds) of pseudo-random inputs
+    // Generate 180 ticks (~3 seconds) of inputs
     const inputs: PlayerInput[] = [];
     for (let t = 0; t < 180; t++) {
       inputs.push({
@@ -24,29 +24,33 @@ export class DeterminismTest {
       });
     }
 
-    // Create container graphics/textures for testing if needed
     const startX = 100;
     const startY = 400;
+
+    // Create an isolated, headless Arcade Physics World instance so main scene physics is untouched
+    const testWorld = new Phaser.Physics.Arcade.World(scene, {
+      gravity: { x: 0, y: 1000 },
+      fps: 60,
+    });
 
     const playerA = new Player(scene, startX, startY, 'player');
     const playerB = new Player(scene, startX, startY, 'player');
 
-    // Make both actors non-visible for the test
     playerA.setVisible(false);
     playerB.setVisible(false);
 
-    // Create a temporary platform for both to land on
+    // Create a temporary platform for isolated test world
     const ground = scene.add.rectangle(400, 550, 800, 40, 0x555555);
-    scene.physics.add.existing(ground, true);
+    testWorld.enable(ground, Phaser.Physics.Arcade.STATIC_BODY);
 
-    const colliderA = scene.physics.add.collider(playerA, ground);
-    const colliderB = scene.physics.add.collider(playerB, ground);
+    const colliderA = testWorld.addCollider(playerA, ground);
+    const colliderB = testWorld.addCollider(playerB, ground);
 
-    // Simulate run A
+    // Simulate Run A in isolated world
     playerA.resetTo(startX, startY);
     for (let i = 0; i < inputs.length; i++) {
       playerA.physicsStep(inputs[i]);
-      scene.physics.world.step(1 / 60);
+      testWorld.step(1 / 60);
     }
 
     const posA = {
@@ -56,11 +60,11 @@ export class DeterminismTest {
       vy: (playerA.body as Phaser.Physics.Arcade.Body).velocity.y,
     };
 
-    // Simulate run B (reset and replay)
+    // Simulate Run B in isolated world
     playerB.resetTo(startX, startY);
     for (let i = 0; i < inputs.length; i++) {
       playerB.physicsStep(inputs[i]);
-      scene.physics.world.step(1 / 60);
+      testWorld.step(1 / 60);
     }
 
     const posB = {
@@ -70,12 +74,13 @@ export class DeterminismTest {
       vy: (playerB.body as Phaser.Physics.Arcade.Body).velocity.y,
     };
 
-    // Clean up temporary objects
-    colliderA.destroy();
-    colliderB.destroy();
+    // Cleanup isolated objects
+    testWorld.removeCollider(colliderA);
+    testWorld.removeCollider(colliderB);
     ground.destroy();
     playerA.destroy();
     playerB.destroy();
+    testWorld.destroy();
 
     const passed =
       posA.x === posB.x && posA.y === posB.y && posA.vx === posB.vx && posA.vy === posB.vy;
