@@ -150,86 +150,77 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private generateDynamicTextures(): void {
+    // Player Texture: 32x48 cyan glowing block
     if (!this.textures.exists('player-texture')) {
-      const pCanvas = this.textures.createCanvas('player-texture', 32, 48);
-      if (pCanvas) {
-        const ctx = pCanvas.getContext();
-        ctx.fillStyle = '#00F0FF';
-        ctx.fillRect(0, 0, 32, 48);
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(1, 1, 30, 46);
-        ctx.fillStyle = '#0A081D';
-        ctx.fillRect(18, 10, 10, 8);
-        pCanvas.refresh();
-      }
+      const g = this.make.graphics({ x: 0, y: 0 });
+      g.fillStyle(0x00F0FF, 1);
+      g.fillRect(0, 0, 32, 48);
+      g.lineStyle(2, 0xFFFFFF, 1);
+      g.strokeRect(1, 1, 30, 46);
+      g.fillStyle(0x0A081D, 1);
+      g.fillRect(18, 10, 10, 8);
+      g.generateTexture('player-texture', 32, 48);
+      g.destroy();
     }
 
+    // Platform Block Texture: 32x32 dark purple block
     if (!this.textures.exists('block-texture')) {
-      const bCanvas = this.textures.createCanvas('block-texture', 32, 32);
-      if (bCanvas) {
-        const ctx = bCanvas.getContext();
-        ctx.fillStyle = '#2A2050';
-        ctx.fillRect(0, 0, 32, 32);
-        ctx.fillStyle = '#7B52FF';
-        ctx.fillRect(0, 0, 32, 4);
-        ctx.strokeStyle = '#3D2D75';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(0, 0, 32, 32);
-        bCanvas.refresh();
-      }
+      const g = this.make.graphics({ x: 0, y: 0 });
+      g.fillStyle(0x2A2050, 1);
+      g.fillRect(0, 0, 32, 32);
+      g.fillStyle(0x7B52FF, 1);
+      g.fillRect(0, 0, 32, 4);
+      g.lineStyle(1, 0x3D2D75, 1);
+      g.strokeRect(0, 0, 32, 32);
+      g.generateTexture('block-texture', 32, 32);
+      g.destroy();
     }
 
+    // Switch Texture: 24x32 lever sprite
     if (!this.textures.exists('switch-texture')) {
-      const sCanvas = this.textures.createCanvas('switch-texture', 24, 32);
-      if (sCanvas) {
-        const ctx = sCanvas.getContext();
-        ctx.fillStyle = '#1A1830';
-        ctx.fillRect(0, 0, 24, 32);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(10, 4, 4, 20);
-        ctx.fillRect(4, 22, 16, 6);
-        sCanvas.refresh();
-      }
+      const g = this.make.graphics({ x: 0, y: 0 });
+      g.fillStyle(0x1A1830, 1);
+      g.fillRect(0, 0, 24, 32);
+      g.fillStyle(0xFFFFFF, 1);
+      g.fillRect(10, 4, 4, 20);
+      g.fillRect(4, 22, 16, 6);
+      g.generateTexture('switch-texture', 24, 32);
+      g.destroy();
     }
 
+    // Gate Texture: 32x96 tall barrier
     if (!this.textures.exists('gate-texture')) {
-      const gCanvas = this.textures.createCanvas('gate-texture', 32, 96);
-      if (gCanvas) {
-        const ctx = gCanvas.getContext();
-        ctx.fillStyle = '#FFDF00';
-        ctx.fillRect(0, 0, 32, 96);
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(2, 2, 28, 92);
-        gCanvas.refresh();
-      }
+      const g = this.make.graphics({ x: 0, y: 0 });
+      g.fillStyle(0xFFDF00, 1);
+      g.fillRect(0, 0, 32, 96);
+      g.lineStyle(2, 0xFFFFFF, 1);
+      g.strokeRect(2, 2, 28, 92);
+      g.generateTexture('gate-texture', 32, 96);
+      g.destroy();
     }
 
+    // Pressure Plate Texture: 48x12 plate
     if (!this.textures.exists('plate-texture')) {
-      const plCanvas = this.textures.createCanvas('plate-texture', 48, 12);
-      if (plCanvas) {
-        const ctx = plCanvas.getContext();
-        ctx.fillStyle = '#7B52FF';
-        ctx.fillRect(0, 0, 48, 12);
-        ctx.fillStyle = '#00F0FF';
-        ctx.fillRect(4, 2, 40, 4);
-        plCanvas.refresh();
-      }
+      const g = this.make.graphics({ x: 0, y: 0 });
+      g.fillStyle(0x7B52FF, 1);
+      g.fillRect(0, 0, 48, 12);
+      g.fillStyle(0x00F0FF, 1);
+      g.fillRect(4, 2, 40, 4);
+      g.generateTexture('plate-texture', 48, 12);
+      g.destroy();
     }
 
+    // Goal Zone Texture: 40x48 exit portal
     if (!this.textures.exists('goal-texture')) {
-      const gzCanvas = this.textures.createCanvas('goal-texture', 40, 48);
-      if (gzCanvas) {
-        const ctx = gzCanvas.getContext();
-        ctx.fillStyle = '#00FF66';
-        ctx.fillRect(0, 0, 40, 48);
-        ctx.fillStyle = '#0A081D';
-        ctx.fillRect(6, 6, 28, 36);
-        ctx.fillStyle = '#00F0FF';
-        ctx.fillRect(14, 14, 12, 20);
-        gzCanvas.refresh();
-      }
+      const g = this.make.graphics({ x: 0, y: 0 });
+      g.fillStyle(0x00FF66, 1);
+      g.fillRect(0, 0, 40, 48);
+      g.fillStyle(0x0A081D, 1);
+      g.fillRect(6, 6, 28, 36);
+      g.fillStyle(0x00F0FF, 1);
+      g.fillRect(14, 14, 12, 20);
+      g.generateTexture('goal-texture', 40, 48);
+      g.destroy();
     }
   }
 
