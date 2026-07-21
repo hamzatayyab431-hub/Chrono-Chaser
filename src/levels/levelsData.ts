@@ -8,22 +8,23 @@ export const LEVELS_DATA: LevelData[] = [
     description: 'Learn to use past loops. Flip the switch on the middle platform to open the gate.',
     loopDurationSeconds: 15,
     maxLoops: 2,
-    spawnPoint: { x: 64, y: 400 },
+    spawnPoint: { x: 100, y: 410 },
     platforms: [
       { x: 400, y: 584, width: 800, height: 32 }, // Floor
       { x: 16, y: 300, width: 32, height: 600 },  // Left Wall
       { x: 784, y: 300, width: 32, height: 600 }, // Right Wall
       { x: 400, y: 16, width: 800, height: 32 },  // Ceiling
+      { x: 100, y: 460, width: 140, height: 32 }, // Spawn Platform
       { x: 350, y: 440, width: 200, height: 32 }, // Middle Platform
-      { x: 640, y: 300, width: 160, height: 32 }, // High Right Platform
+      { x: 640, y: 340, width: 160, height: 32 }, // High Right Exit Platform
     ],
     switches: [
       { id: 'switch-1', x: 300, y: 408 },
     ],
     gates: [
-      { id: 'gate-1', x: 540, y: 368, controlIds: ['switch-1'], mode: 'all' },
+      { id: 'gate-1', x: 570, y: 308, controlIds: ['switch-1'], mode: 'all' },
     ],
-    goalZone: { id: 'goal-1', x: 700, y: 240 },
+    goalZone: { id: 'goal-1', x: 680, y: 280 },
   },
 
   // --- LEVEL 2: Time Relay ---
@@ -33,23 +34,24 @@ export const LEVELS_DATA: LevelData[] = [
     description: 'The switch is far away. Have your past self flip the switch while you sprint to the gate.',
     loopDurationSeconds: 15,
     maxLoops: 2,
-    spawnPoint: { x: 64, y: 500 },
+    spawnPoint: { x: 100, y: 410 },
     platforms: [
       { x: 400, y: 584, width: 800, height: 32 },
       { x: 16, y: 300, width: 32, height: 600 },
       { x: 784, y: 300, width: 32, height: 600 },
       { x: 400, y: 16, width: 800, height: 32 },
-      { x: 120, y: 350, width: 140, height: 32 }, // High Left Ledge
-      { x: 300, y: 450, width: 140, height: 32 }, // Middle Ledge
-      { x: 640, y: 500, width: 160, height: 32 }, // Exit Platform
+      { x: 100, y: 460, width: 140, height: 32 }, // Spawn Platform
+      { x: 120, y: 320, width: 140, height: 32 }, // High Left Ledge
+      { x: 380, y: 440, width: 180, height: 32 }, // Middle Ledge
+      { x: 650, y: 460, width: 160, height: 32 }, // Exit Platform
     ],
     switches: [
-      { id: 'switch-relay', x: 100, y: 318 },
+      { id: 'switch-relay', x: 100, y: 288 },
     ],
     gates: [
-      { id: 'gate-relay', x: 580, y: 520, controlIds: ['switch-relay'], mode: 'all' },
+      { id: 'gate-relay', x: 580, y: 428, controlIds: ['switch-relay'], mode: 'all' },
     ],
-    goalZone: { id: 'goal-2', x: 720, y: 440 },
+    goalZone: { id: 'goal-2', x: 700, y: 400 },
   },
 
   // --- LEVEL 3: Dual Pressure ---
@@ -59,23 +61,24 @@ export const LEVELS_DATA: LevelData[] = [
     description: 'Requires two bodies standing on separate pressure plates at the same time.',
     loopDurationSeconds: 15,
     maxLoops: 3,
-    spawnPoint: { x: 64, y: 400 },
+    spawnPoint: { x: 100, y: 410 },
     platforms: [
       { x: 400, y: 584, width: 800, height: 32 },
       { x: 16, y: 300, width: 32, height: 600 },
       { x: 784, y: 300, width: 32, height: 600 },
       { x: 400, y: 16, width: 800, height: 32 },
-      { x: 350, y: 440, width: 200, height: 32 },
-      { x: 640, y: 300, width: 160, height: 32 },
+      { x: 100, y: 460, width: 140, height: 32 }, // Spawn Platform
+      { x: 350, y: 440, width: 200, height: 32 }, // Middle Ledge
+      { x: 650, y: 340, width: 160, height: 32 }, // Exit Ledge
     ],
     pressurePlates: [
-      { id: 'plate-a', x: 380, y: 428 },
+      { id: 'plate-a', x: 350, y: 428 },
       { id: 'plate-b', x: 520, y: 562 },
     ],
     gates: [
-      { id: 'gate-dual', x: 580, y: 250, controlIds: ['plate-a', 'plate-b'], mode: 'all' },
+      { id: 'gate-dual', x: 580, y: 308, controlIds: ['plate-a', 'plate-b'], mode: 'all' },
     ],
-    goalZone: { id: 'goal-3', x: 700, y: 240 },
+    goalZone: { id: 'goal-3', x: 700, y: 280 },
   },
 
   // --- LEVEL 4: Triple Synchrony ---
@@ -85,27 +88,28 @@ export const LEVELS_DATA: LevelData[] = [
     description: 'Coordinate three past selves to trigger a switch and two pressure plates simultaneously.',
     loopDurationSeconds: 15,
     maxLoops: 4,
-    spawnPoint: { x: 64, y: 400 },
+    spawnPoint: { x: 100, y: 410 },
     platforms: [
       { x: 400, y: 584, width: 800, height: 32 },
       { x: 16, y: 300, width: 32, height: 600 },
       { x: 784, y: 300, width: 32, height: 600 },
       { x: 400, y: 16, width: 800, height: 32 },
-      { x: 140, y: 280, width: 140, height: 32 },
-      { x: 350, y: 440, width: 200, height: 32 },
-      { x: 640, y: 300, width: 160, height: 32 },
+      { x: 100, y: 460, width: 140, height: 32 }, // Spawn Platform
+      { x: 120, y: 300, width: 140, height: 32 }, // High Left Ledge
+      { x: 350, y: 440, width: 200, height: 32 }, // Middle Ledge
+      { x: 650, y: 340, width: 160, height: 32 }, // Exit Platform
     ],
     switches: [
-      { id: 'sw-triple', x: 120, y: 248 },
+      { id: 'sw-triple', x: 100, y: 268 },
     ],
     pressurePlates: [
       { id: 'plate-tri-a', x: 350, y: 428 },
       { id: 'plate-tri-b', x: 500, y: 562 },
     ],
     gates: [
-      { id: 'gate-triple', x: 580, y: 250, controlIds: ['sw-triple', 'plate-tri-a', 'plate-tri-b'], mode: 'all' },
+      { id: 'gate-triple', x: 580, y: 308, controlIds: ['sw-triple', 'plate-tri-a', 'plate-tri-b'], mode: 'all' },
     ],
-    goalZone: { id: 'goal-4', x: 720, y: 240 },
+    goalZone: { id: 'goal-4', x: 700, y: 280 },
   },
 
   // --- LEVEL 5: Chrono Master (Finale) ---
@@ -115,18 +119,19 @@ export const LEVELS_DATA: LevelData[] = [
     description: 'The master challenge. Navigate nested barriers and coordinate a 4-ghost army to escape.',
     loopDurationSeconds: 15,
     maxLoops: 4,
-    spawnPoint: { x: 64, y: 500 },
+    spawnPoint: { x: 100, y: 430 },
     platforms: [
       { x: 400, y: 584, width: 800, height: 32 },
       { x: 16, y: 300, width: 32, height: 600 },
       { x: 784, y: 300, width: 32, height: 600 },
       { x: 400, y: 16, width: 800, height: 32 },
-      { x: 140, y: 350, width: 140, height: 32 }, // Left Ledge
+      { x: 100, y: 480, width: 140, height: 32 }, // Spawn Platform
+      { x: 140, y: 340, width: 140, height: 32 }, // Left Ledge
       { x: 380, y: 440, width: 180, height: 32 }, // Middle Ledge
-      { x: 640, y: 280, width: 160, height: 32 }, // Master Exit Platform
+      { x: 650, y: 340, width: 160, height: 32 }, // Master Exit Platform
     ],
     switches: [
-      { id: 'sw-finale-1', x: 120, y: 318 },
+      { id: 'sw-finale-1', x: 120, y: 308 },
       { id: 'sw-finale-2', x: 380, y: 408 },
     ],
     pressurePlates: [
@@ -134,9 +139,9 @@ export const LEVELS_DATA: LevelData[] = [
       { id: 'plate-fin-b', x: 500, y: 562 },
     ],
     gates: [
-      { id: 'gate-fin-outer', x: 300, y: 520, controlIds: ['sw-finale-1'], mode: 'all' },
-      { id: 'gate-fin-inner', x: 580, y: 240, controlIds: ['sw-finale-2', 'plate-fin-a', 'plate-fin-b'], mode: 'all' },
+      { id: 'gate-fin-outer', x: 300, y: 530, controlIds: ['sw-finale-1'], mode: 'all' },
+      { id: 'gate-fin-inner', x: 580, y: 308, controlIds: ['sw-finale-2', 'plate-fin-a', 'plate-fin-b'], mode: 'all' },
     ],
-    goalZone: { id: 'goal-5', x: 720, y: 220 },
+    goalZone: { id: 'goal-5', x: 700, y: 280 },
   },
 ];

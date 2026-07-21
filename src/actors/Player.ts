@@ -59,7 +59,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     // Jump Trigger
     if (this.jumpBufferTicks > 0 && this.coyoteTicks > 0) {
-      body.setVelocityY(-450);
+      body.setVelocityY(-480);
       this.jumpBufferTicks = 0;
       this.coyoteTicks = 0;
 
