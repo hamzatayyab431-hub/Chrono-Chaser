@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { PlayerInput } from '../types/PlayerInput';
+import { SoundEffects } from '../systems/SoundEffects';
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   private coyoteTicks: number = 0;
@@ -7,7 +8,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private readonly COYOTE_MAX_TICKS: number = 6; // 100ms at 60 FPS
   private readonly JUMP_BUFFER_MAX_TICKS: number = 6; // 100ms at 60 FPS
 
-  constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string = 'player') {
+  constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string = 'player-texture') {
     super(scene, x, y, textureKey);
 
     scene.add.existing(this);
@@ -61,6 +62,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       body.setVelocityY(-450);
       this.jumpBufferTicks = 0;
       this.coyoteTicks = 0;
+
+      // Play Jump Sound Effect
+      SoundEffects.playJump();
     }
   }
 

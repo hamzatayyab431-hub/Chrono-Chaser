@@ -4,6 +4,7 @@ import { Ghost } from '../actors/Ghost';
 import { InputRecorder } from '../actors/InputRecorder';
 import { LoopManager } from '../systems/LoopManager';
 import { PersistentState } from '../systems/PersistentState';
+import { SoundEffects } from '../systems/SoundEffects';
 import { Switch } from '../interactables/Switch';
 import { Gate } from '../interactables/Gate';
 import { PressurePlate } from '../interactables/PressurePlate';
@@ -55,6 +56,8 @@ export class LevelScene extends Phaser.Scene {
   private keyT!: Phaser.Input.Keyboard.Key;
   private keyN!: Phaser.Input.Keyboard.Key;
   private keyP!: Phaser.Input.Keyboard.Key;
+  private keyEsc!: Phaser.Input.Keyboard.Key;
+  private keyM!: Phaser.Input.Keyboard.Key;
 
   constructor() {
     super({ key: 'LevelScene' });
@@ -65,7 +68,6 @@ export class LevelScene extends Phaser.Scene {
     this.currentLevelIndex = Phaser.Math.Clamp(this.currentLevelIndex, 0, LEVELS_DATA.length - 1);
     this.levelData = LEVELS_DATA[this.currentLevelIndex];
 
-    // Startup Validation Check: verify all gate controlIds exist in the level data
     this.validateLevelData(this.levelData);
   }
 
@@ -73,7 +75,12 @@ export class LevelScene extends Phaser.Scene {
     this.isLevelComplete = false;
     this.isGameOver = false;
 
-    // Generate dynamic placeholder textures
+    // Unlock Web Audio Context on user gesture
+    this.input.on('pointerdown', () => SoundEffects.ensureAudioUnlocked());
+    if (this.input.keyboard) {
+      this.input.keyboard.on('keydown', () => SoundEffects.ensureAudioUnlocked());
+    }
+
     this.generateDynamicTextures();
 
     // Background
@@ -83,7 +90,7 @@ export class LevelScene extends Phaser.Scene {
     this.loopManager = new LoopManager();
     this.persistentState = new PersistentState();
 
-    // Create Platforms & Level Geometry from levelData
+    // Create Platforms & Level Geometry
     this.platforms = this.physics.add.staticGroup();
     this.switches = [];
     this.gates = [];
@@ -91,12 +98,12 @@ export class LevelScene extends Phaser.Scene {
 
     this.buildRoomFromData(this.levelData);
 
-    // Create Live Player at level spawn point
+    // Create Live Player
     const spawn = this.levelData.spawnPoint;
     this.player = new Player(this, spawn.x, spawn.y, 'player-texture');
     this.physics.add.collider(this.player, this.platforms);
 
-    // Gates Collider with Live Player
+    // Gates Collider
     this.gates.forEach((gate) => {
       this.physics.add.collider(this.player, gate);
     });
@@ -110,6 +117,8 @@ export class LevelScene extends Phaser.Scene {
       this.keyT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.T);
       this.keyN = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.N);
       this.keyP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+      this.keyEsc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+      this.keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
     }
 
     // Set up HUD
@@ -225,12 +234,10 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private buildRoomFromData(data: LevelData): void {
-    // 1. Build Platforms
     data.platforms.forEach((p) => {
       const width = p.width || 32;
       const height = p.height || 32;
 
-      // Fill platform area with tiles
       for (let x = p.x - width / 2 + 16; x <= p.x + width / 2 - 16; x += 32) {
         for (let y = p.y - height / 2 + 16; y <= p.y + height / 2 - 16; y += 32) {
           this.platforms.create(x, y, 'block-texture').refreshBody();
@@ -238,7 +245,6 @@ export class LevelScene extends Phaser.Scene {
       }
     });
 
-    // 2. Build Switches
     if (data.switches) {
       data.switches.forEach((sw) => {
         const switchEntity = new Switch(this, sw.x, sw.y, {
@@ -250,7 +256,6 @@ export class LevelScene extends Phaser.Scene {
       });
     }
 
-    // 3. Build Pressure Plates
     if (data.pressurePlates) {
       data.pressurePlates.forEach((plate) => {
         const plateEntity = new PressurePlate(this, plate.x, plate.y, {
@@ -262,7 +267,6 @@ export class LevelScene extends Phaser.Scene {
       });
     }
 
-    // 4. Build Gates
     if (data.gates) {
       data.gates.forEach((gate) => {
         const gateEntity = new Gate(this, gate.x, gate.y, {
@@ -276,7 +280,6 @@ export class LevelScene extends Phaser.Scene {
       });
     }
 
-    // 5. Build Goal Zone
     this.goalZone = new GoalZone(this, data.goalZone.x, data.goalZone.y, {
       id: data.goalZone.id,
       textureKey: 'goal-texture',
@@ -323,7 +326,7 @@ export class LevelScene extends Phaser.Scene {
     this.add.text(
       25,
       545,
-      '[A/D] Move | [Space/W] Jump | [E] Switch | [R] Restart | [N/P] Level Select | [T] Test',
+      '[A/D] Move | [Space] Jump | [E] Switch | [R] Reset | [N/P] Level | [ESC/M] Menu',
       {
         fontFamily: 'monospace',
         fontSize: '12px',
@@ -356,6 +359,10 @@ export class LevelScene extends Phaser.Scene {
       this.triggerGameOver();
       return;
     }
+
+    // Play Time-Warp Rewind SFX & Camera Flash
+    SoundEffects.playReset();
+    this.cameras.main.flash(200, 0, 240, 255);
 
     // 1. Finalize current loop recording
     this.loopManager.finalizeLoop();
@@ -409,13 +416,20 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private loadNextLevel(): void {
+    SoundEffects.stopAll();
     const nextIndex = (this.currentLevelIndex + 1) % LEVELS_DATA.length;
     this.scene.restart({ levelIndex: nextIndex });
   }
 
   private loadPrevLevel(): void {
+    SoundEffects.stopAll();
     const prevIndex = (this.currentLevelIndex - 1 + LEVELS_DATA.length) % LEVELS_DATA.length;
     this.scene.restart({ levelIndex: prevIndex });
+  }
+
+  private returnToMenu(): void {
+    SoundEffects.stopAll();
+    this.scene.start('MenuScene');
   }
 
   private destroyActiveGhosts(): void {
@@ -424,6 +438,15 @@ export class LevelScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
+    // Hotkey: ESC / M -> Return to MenuScene
+    if (
+      (this.keyEsc && Phaser.Input.Keyboard.JustDown(this.keyEsc)) ||
+      (this.keyM && Phaser.Input.Keyboard.JustDown(this.keyM))
+    ) {
+      this.returnToMenu();
+      return;
+    }
+
     // Hotkey: R -> Restart level
     if (this.keyR && Phaser.Input.Keyboard.JustDown(this.keyR)) {
       this.restartFullLevel();
@@ -506,24 +529,41 @@ export class LevelScene extends Phaser.Scene {
 
     // Evaluate Switches
     this.switches.forEach((sw) => {
+      let activated = false;
+
       if (this.physics.overlap(this.player, sw) && liveInput.action) {
         sw.activate();
+        activated = true;
       }
 
       this.ghosts.forEach((ghost, index) => {
         const gInput = ghostInputs[index];
         if (this.physics.overlap(ghost, sw) && gInput && gInput.action) {
           sw.activate();
+          activated = true;
         }
       });
+
+      if (activated) {
+        SoundEffects.playSwitch();
+        this.cameras.main.shake(180, 0.008);
+      }
     });
 
     // Evaluate Pressure Plates
     this.pressurePlates.forEach((plate) => {
+      const prevPressed = this.persistentState.getState(plate.id);
       const overlappingCount = allActors.filter((actor) =>
         this.physics.overlap(actor, plate)
       ).length;
+
       plate.evaluateOverlaps(overlappingCount);
+      const nowPressed = this.persistentState.getState(plate.id);
+
+      if (!prevPressed && nowPressed) {
+        SoundEffects.playPlate();
+        this.cameras.main.shake(120, 0.005);
+      }
     });
   }
 
@@ -538,7 +578,9 @@ export class LevelScene extends Phaser.Scene {
   private triggerLevelWin(): void {
     this.isLevelComplete = true;
 
-    // Victory Particles
+    // SFX, Camera Shake, and Victory Particles
+    SoundEffects.playWin();
+    this.cameras.main.shake(300, 0.012);
     this.createVictoryParticles(this.goalZone.x, this.goalZone.y);
 
     // Show Victory Modal
@@ -552,6 +594,7 @@ export class LevelScene extends Phaser.Scene {
 
   private triggerGameOver(): void {
     this.isGameOver = true;
+    SoundEffects.playFail();
     this.showModal(
       'OUT OF LOOPS!',
       `Reached maximum limit (${this.levelData.maxLoops} loops) without exiting.`,
@@ -561,10 +604,10 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private createVictoryParticles(x: number, y: number): void {
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 35; i++) {
       const p = this.add.circle(x, y, Phaser.Math.Between(4, 8), 0x00F0FF);
       const angle = Phaser.Math.Between(0, 360);
-      const speed = Phaser.Math.Between(100, 300);
+      const speed = Phaser.Math.Between(100, 320);
 
       this.tweens.add({
         targets: p,
@@ -584,11 +627,11 @@ export class LevelScene extends Phaser.Scene {
 
     const overlay = this.add.rectangle(400, 300, 800, 600, 0x05040a, 0.85);
     const box = this.add
-      .rectangle(400, 300, 500, 240, 0x0a081d)
+      .rectangle(400, 300, 520, 250, 0x0a081d)
       .setStrokeStyle(2, accentColor);
 
     const titleText = this.add
-      .text(400, 230, title, {
+      .text(400, 225, title, {
         fontFamily: 'monospace',
         fontSize: '26px',
         color: accentColor === 0x00FF66 ? '#00FF66' : '#FF3366',
@@ -596,21 +639,21 @@ export class LevelScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const subText = this.add
-      .text(400, 285, subtitle, {
+      .text(400, 275, subtitle, {
         fontFamily: 'monospace',
         fontSize: '14px',
         color: '#E0E0FF',
         align: 'center',
-        wordWrap: { width: 460 },
+        wordWrap: { width: 480 },
       })
       .setOrigin(0.5);
 
     const promptMsg = isWin
-      ? 'Press [ N ] for Next Level  |  Press [ R ] to Replay'
-      : 'Press [ R ] to Retry Level';
+      ? '[N] Next Level  |  [R] Replay  |  [M] Main Menu'
+      : '[R] Retry Level  |  [M] Main Menu';
 
     const promptText = this.add
-      .text(400, 360, promptMsg, {
+      .text(400, 345, promptMsg, {
         fontFamily: 'monospace',
         fontSize: '14px',
         color: '#FFDF00',
