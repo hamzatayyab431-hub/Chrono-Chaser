@@ -1,3 +1,6 @@
+/**
+ * Web Audio API Sound Effects Synthesizer for Chrono-Chaser.
+ */
 export class SoundEffects {
   private static ctx: AudioContext | null = null;
   private static activeOscillators: OscillatorNode[] = [];
