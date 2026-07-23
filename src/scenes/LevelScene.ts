@@ -58,6 +58,7 @@ export class LevelScene extends Phaser.Scene {
   private keyP!: Phaser.Input.Keyboard.Key;
   private keyEsc!: Phaser.Input.Keyboard.Key;
   private keyM!: Phaser.Input.Keyboard.Key;
+  private keyU!: Phaser.Input.Keyboard.Key;
 
   constructor() {
     super({ key: 'LevelScene' });
@@ -119,6 +120,7 @@ export class LevelScene extends Phaser.Scene {
       this.keyP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
       this.keyEsc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
       this.keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+      this.keyU = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.U);
     }
 
     // Set up HUD
@@ -317,7 +319,7 @@ export class LevelScene extends Phaser.Scene {
     this.add.text(
       25,
       545,
-      '[A/D] Move | [Space] Jump | [E] Switch | [R] Reset | [N/P] Level | [ESC/M] Menu',
+      '[A/D] Move | [Space] Jump | [E] Switch | [R] Reset | [U] Mute | [N/P] Level | [ESC/M] Menu',
       {
         fontFamily: 'monospace',
         fontSize: '12px',
@@ -387,6 +389,7 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private restartFullLevel(): void {
+    SoundEffects.playReset();
     this.isLevelComplete = false;
     this.isGameOver = false;
     this.modalContainer.removeAll(true).setVisible(false);
@@ -442,6 +445,12 @@ export class LevelScene extends Phaser.Scene {
     if (this.keyR && Phaser.Input.Keyboard.JustDown(this.keyR)) {
       this.restartFullLevel();
       return;
+    }
+
+    // Hotkey: U -> Toggle Audio Mute
+    if (this.keyU && Phaser.Input.Keyboard.JustDown(this.keyU)) {
+      const isMuted = SoundEffects.toggleMute();
+      this.testStatusText.setText(`Audio: ${isMuted ? 'MUTED' : 'UNMUTED'}`).setColor(isMuted ? '#FFDF00' : '#00FF66');
     }
 
     // Hotkey: N -> Next level (disabled on Game Over)

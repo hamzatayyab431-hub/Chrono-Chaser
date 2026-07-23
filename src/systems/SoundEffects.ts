@@ -4,9 +4,22 @@
 export class SoundEffects {
   private static ctx: AudioContext | null = null;
   private static activeOscillators: OscillatorNode[] = [];
+  private static muted: boolean = false;
+
+  public static toggleMute(): boolean {
+    SoundEffects.muted = !SoundEffects.muted;
+    if (SoundEffects.muted) {
+      SoundEffects.stopAll();
+    }
+    return SoundEffects.muted;
+  }
+
+  public static isMuted(): boolean {
+    return SoundEffects.muted;
+  }
 
   private static getContext(): AudioContext | null {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === 'undefined' || SoundEffects.muted) return null;
 
     if (!SoundEffects.ctx) {
       const AudioCtxClass =
