@@ -20,6 +20,7 @@ export class InputRecorder {
 
   private boundKeyDownListener: (e: KeyboardEvent) => void;
   private boundKeyUpListener: (e: KeyboardEvent) => void;
+  private boundBlurListener: () => void;
 
   constructor(scene: Phaser.Scene) {
     if (scene.input && scene.input.keyboard) {
@@ -34,9 +35,11 @@ export class InputRecorder {
     // Attach DOM window event listeners as a fail-safe for browser input focus
     this.boundKeyDownListener = (e: KeyboardEvent) => this.handleDomKeyDown(e);
     this.boundKeyUpListener = (e: KeyboardEvent) => this.handleDomKeyUp(e);
+    this.boundBlurListener = () => this.reset();
 
     window.addEventListener('keydown', this.boundKeyDownListener);
     window.addEventListener('keyup', this.boundKeyUpListener);
+    window.addEventListener('blur', this.boundBlurListener);
 
     // Clean up listeners when scene shuts down
     scene.events.once('shutdown', () => this.destroy());
@@ -128,5 +131,6 @@ export class InputRecorder {
   public destroy(): void {
     window.removeEventListener('keydown', this.boundKeyDownListener);
     window.removeEventListener('keyup', this.boundKeyUpListener);
+    window.removeEventListener('blur', this.boundBlurListener);
   }
 }

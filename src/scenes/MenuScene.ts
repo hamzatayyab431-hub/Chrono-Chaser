@@ -52,11 +52,19 @@ export class MenuScene extends Phaser.Scene {
 
     // Keyboard listeners for number keys 1..5
     if (this.input && this.input.keyboard) {
-      this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
+      const keyHandler = (event: KeyboardEvent) => {
         SoundEffects.ensureAudioUnlocked();
         const num = parseInt(event.key, 10);
         if (num >= 1 && num <= LEVELS_DATA.length) {
           this.launchLevel(num - 1);
+        }
+      };
+
+      this.input.keyboard.on('keydown', keyHandler);
+
+      this.events.once('shutdown', () => {
+        if (this.input && this.input.keyboard) {
+          this.input.keyboard.off('keydown', keyHandler);
         }
       });
     }
