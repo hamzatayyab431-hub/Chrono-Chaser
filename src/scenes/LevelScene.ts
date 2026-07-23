@@ -571,6 +571,9 @@ export class LevelScene extends Phaser.Scene {
   private triggerLevelWin(): void {
     this.isLevelComplete = true;
 
+    // Mark level as completed in persistent storage
+    PersistentState.markLevelCompleted(this.levelData.id);
+
     // SFX, Camera Shake, and Victory Particles
     SoundEffects.playWin();
     this.cameras.main.shake(300, 0.012);

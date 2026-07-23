@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { LEVELS_DATA } from '../levels/levelsData';
 import { SoundEffects } from '../systems/SoundEffects';
+import { PersistentState } from '../systems/PersistentState';
 
 export class MenuScene extends Phaser.Scene {
   constructor() {
@@ -104,23 +105,24 @@ export class MenuScene extends Phaser.Scene {
 
     LEVELS_DATA.forEach((level, index) => {
       const y = startY + index * (cardHeight + 10);
+      const isCompleted = PersistentState.isLevelCompleted(level.id);
 
       // Card Background Box
       const cardBg = this.add
         .rectangle(400, y, cardWidth, cardHeight, 0x121026)
-        .setStrokeStyle(1, 0x3d2d75)
+        .setStrokeStyle(1, isCompleted ? 0x00ff66 : 0x3d2d75)
         .setInteractive({ useHandCursor: true });
 
       // Card Level Number Badge
       this.add
         .rectangle(80, y, 50, 45, 0x2a2050)
-        .setStrokeStyle(1, 0x00f0ff);
+        .setStrokeStyle(1, isCompleted ? 0x00ff66 : 0x00f0ff);
 
       this.add
         .text(80, y, `${index + 1}`, {
           fontFamily: 'monospace',
           fontSize: '22px',
-          color: '#00F0FF',
+          color: isCompleted ? '#00FF66' : '#00F0FF',
         })
         .setOrigin(0.5);
 
@@ -137,12 +139,20 @@ export class MenuScene extends Phaser.Scene {
         color: '#A0A0C0',
       });
 
-      // Max Loops Badge
-      this.add.text(590, y, `CAP: ${level.maxLoops} L`, {
-        fontFamily: 'monospace',
-        fontSize: '12px',
-        color: '#CE42FF',
-      }).setOrigin(0.5);
+      // Completion / Max Loops Badge
+      if (isCompleted) {
+        this.add.text(560, y, 'CLEARED ✓', {
+          fontFamily: 'monospace',
+          fontSize: '12px',
+          color: '#00FF66',
+        }).setOrigin(0.5);
+      } else {
+        this.add.text(560, y, `CAP: ${level.maxLoops} L`, {
+          fontFamily: 'monospace',
+          fontSize: '12px',
+          color: '#CE42FF',
+        }).setOrigin(0.5);
+      }
 
       // PLAY Button
       const playBtn = this.add
