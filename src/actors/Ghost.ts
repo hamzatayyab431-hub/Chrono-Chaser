@@ -27,8 +27,8 @@ export class Ghost extends Player {
    * Ghost physics step driven by recorded input frames.
    * Spawns a subtle visual motion trail every 6 physics ticks.
    */
-  public override physicsStep(input: PlayerInput): void {
-    super.physicsStep(input);
+  public override physicsStep(input: PlayerInput, _playAudio: boolean = false): void {
+    super.physicsStep(input, false);
 
     // Motion Trail Effect (visual only, no physics impact)
     this.trailTimer++;

@@ -27,7 +27,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   /**
    * Deterministic physics update called once per 60Hz physics tick.
    */
-  public physicsStep(input: PlayerInput): void {
+  public physicsStep(input: PlayerInput, playAudio: boolean = true): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
     if (!body) return;
 
@@ -63,8 +63,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.jumpBufferTicks = 0;
       this.coyoteTicks = 0;
 
-      // Play Jump Sound Effect
-      SoundEffects.playJump();
+      // Play Jump Sound Effect if audio is enabled for this actor
+      if (playAudio) {
+        SoundEffects.playJump();
+      }
     }
   }
 

@@ -33,8 +33,8 @@ export class DeterminismTest {
       fps: 60,
     });
 
-    const playerA = new Player(scene, startX, startY, 'player');
-    const playerB = new Player(scene, startX, startY, 'player');
+    const playerA = new Player(scene, startX, startY, 'player-texture');
+    const playerB = new Player(scene, startX, startY, 'player-texture');
 
     playerA.setVisible(false);
     playerB.setVisible(false);
@@ -49,7 +49,7 @@ export class DeterminismTest {
     // Simulate Run A in isolated world
     playerA.resetTo(startX, startY);
     for (let i = 0; i < inputs.length; i++) {
-      playerA.physicsStep(inputs[i]);
+      playerA.physicsStep(inputs[i], false);
       testWorld.step(1 / 60);
     }
 
@@ -63,7 +63,7 @@ export class DeterminismTest {
     // Simulate Run B in isolated world
     playerB.resetTo(startX, startY);
     for (let i = 0; i < inputs.length; i++) {
-      playerB.physicsStep(inputs[i]);
+      playerB.physicsStep(inputs[i], false);
       testWorld.step(1 / 60);
     }
 
