@@ -21,6 +21,18 @@ export class Ghost extends Player {
     const tints = [0x00F0FF, 0xCE42FF, 0xFFDF00, 0x00FF88];
     const tintColor = tints[(loopNumber - 1) % tints.length];
     this.setTint(tintColor);
+
+    // Ethereal pulsing glow tween
+    if (scene && scene.tweens) {
+      scene.tweens.add({
+        targets: this,
+        alpha: { from: 0.5, to: 0.8 },
+        duration: 1100,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
   }
 
   /**

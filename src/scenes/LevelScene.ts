@@ -749,6 +749,13 @@ export class LevelScene extends Phaser.Scene {
     const displayTime = Math.max(0, this.remainingSeconds).toFixed(2);
     this.levelTitleText.setText(`L${this.currentLevelIndex + 1}: ${this.levelData.name}`);
     this.timerText.setText(`TIME: ${displayTime}s`);
+
+    if (this.remainingSeconds <= 3.0) {
+      this.timerText.setColor('#FF3366');
+    } else {
+      this.timerText.setColor('#FFDF00');
+    }
+
     this.loopText.setText(`LOOP: ${this.loopCount} of ${this.levelData.maxLoops}`);
     this.ghostCountText.setText(`GHOSTS: ${this.ghosts.length}`);
     this.ticksText.setText(`TICKS: ${this.currentTick}`);
