@@ -444,10 +444,12 @@ export class LevelScene extends Phaser.Scene {
       return;
     }
 
-    // Hotkey: N -> Next level
+    // Hotkey: N -> Next level (disabled on Game Over)
     if (this.keyN && Phaser.Input.Keyboard.JustDown(this.keyN)) {
-      this.loadNextLevel();
-      return;
+      if (!this.isGameOver) {
+        this.loadNextLevel();
+        return;
+      }
     }
 
     // Hotkey: P -> Prev level
@@ -460,7 +462,7 @@ export class LevelScene extends Phaser.Scene {
       return;
     }
 
-    // Hotkey: T -> Run smoke test
+    // Hotkey: T -> Run smoke test (only active during active gameplay)
     if (this.keyT && Phaser.Input.Keyboard.JustDown(this.keyT)) {
       this.runSmokeTest();
     }
