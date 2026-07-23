@@ -127,6 +127,7 @@ export const LEVELS_DATA: LevelData[] = [
       { x: 400, y: 16, width: 800, height: 32 },
       { x: 100, y: 480, width: 140, height: 32 }, // Spawn Platform
       { x: 140, y: 340, width: 140, height: 32 }, // Left Ledge
+      { x: 300, y: 350, width: 32, height: 260 }, // Outer Wall Barrier Column
       { x: 380, y: 440, width: 180, height: 32 }, // Middle Ledge
       { x: 650, y: 340, width: 160, height: 32 }, // Master Exit Platform
     ],
@@ -139,7 +140,7 @@ export const LEVELS_DATA: LevelData[] = [
       { id: 'plate-fin-b', x: 500, y: 562 },
     ],
     gates: [
-      { id: 'gate-fin-outer', x: 300, y: 530, controlIds: ['sw-finale-1'], mode: 'all' },
+      { id: 'gate-fin-outer', x: 300, y: 520, controlIds: ['sw-finale-1'], mode: 'all' },
       { id: 'gate-fin-inner', x: 580, y: 308, controlIds: ['sw-finale-2', 'plate-fin-a', 'plate-fin-b'], mode: 'all' },
     ],
     goalZone: { id: 'goal-5', x: 700, y: 280 },
