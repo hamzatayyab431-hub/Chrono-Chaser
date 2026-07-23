@@ -318,16 +318,92 @@ export class LevelScene extends Phaser.Scene {
     // Control tips footer
     this.add.text(
       25,
-      545,
+      525,
       '[A/D] Move | [Space] Jump | [E] Switch | [R] Reset | [U] Mute | [N/P] Level | [ESC/M] Menu',
       {
         fontFamily: 'monospace',
-        fontSize: '12px',
+        fontSize: '11px',
         color: '#A0A0C0',
       }
     );
 
+    this.setupTouchControls();
+
     this.modalContainer = this.add.container(0, 0).setDepth(100).setVisible(false);
+  }
+
+  private setupTouchControls(): void {
+    const touchGroup = this.add.container(0, 0).setDepth(90);
+
+    const createBtn = (
+      x: number,
+      y: number,
+      label: string,
+      onDown: () => void,
+      onUp: () => void
+    ) => {
+      const bg = this.add
+        .circle(x, y, 20, 0x2a2050, 0.6)
+        .setStrokeStyle(1.5, 0x00f0ff)
+        .setInteractive({ useHandCursor: true });
+
+      const text = this.add
+        .text(x, y, label, {
+          fontFamily: 'monospace',
+          fontSize: '15px',
+          color: '#00F0FF',
+        })
+        .setOrigin(0.5);
+
+      bg.on('pointerdown', () => {
+        bg.setAlpha(0.9);
+        bg.setStrokeStyle(2, 0x00ff66);
+        onDown();
+      });
+
+      const handleRelease = () => {
+        bg.setAlpha(0.6);
+        bg.setStrokeStyle(1.5, 0x00f0ff);
+        onUp();
+      };
+
+      bg.on('pointerup', handleRelease);
+      bg.on('pointerout', handleRelease);
+
+      touchGroup.add([bg, text]);
+    };
+
+    // Touch D-Pad Left / Right
+    createBtn(
+      50,
+      565,
+      '◄',
+      () => this.inputRecorder.setTouchLeft(true),
+      () => this.inputRecorder.setTouchLeft(false)
+    );
+    createBtn(
+      105,
+      565,
+      '►',
+      () => this.inputRecorder.setTouchRight(true),
+      () => this.inputRecorder.setTouchRight(false)
+    );
+
+    // Touch Action / Jump Buttons
+    createBtn(
+      690,
+      565,
+      'E',
+      () => this.inputRecorder.setTouchAction(true),
+      () => this.inputRecorder.setTouchAction(false)
+    );
+    createBtn(
+      750,
+      565,
+      '▲',
+      () => this.inputRecorder.setTouchJump(true),
+      () => this.inputRecorder.setTouchJump(false)
+    );
   }
 
   private runSmokeTest(): void {

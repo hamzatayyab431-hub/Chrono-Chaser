@@ -119,6 +119,22 @@ export class InputRecorder {
     };
   }
 
+  public setTouchLeft(down: boolean): void {
+    this.domLeft = down;
+  }
+
+  public setTouchRight(down: boolean): void {
+    this.domRight = down;
+  }
+
+  public setTouchJump(down: boolean): void {
+    this.domJump = down;
+  }
+
+  public setTouchAction(down: boolean): void {
+    this.domAction = down;
+  }
+
   public reset(): void {
     this.prevJumpDown = false;
     this.prevActionDown = false;
