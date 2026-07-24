@@ -5,7 +5,7 @@ export const LEVELS_DATA: LevelData[] = [
   {
     id: 'level-01',
     name: 'First Steps',
-    description: 'Learn to use past loops. Flip the switch on the middle platform to open the gate.',
+    description: 'Loop 1: Jump up left to flip the switch. Loop 2: Walk through the unlocked gate to the exit.',
     loopDurationSeconds: 15,
     maxLoops: 2,
     spawnPoint: { x: 100, y: 410 },
@@ -15,16 +15,18 @@ export const LEVELS_DATA: LevelData[] = [
       { x: 784, y: 300, width: 32, height: 600 }, // Right Wall
       { x: 400, y: 16, width: 800, height: 32 },  // Ceiling
       { x: 100, y: 460, width: 140, height: 32 }, // Spawn Platform
-      { x: 350, y: 440, width: 200, height: 32 }, // Middle Platform
-      { x: 640, y: 340, width: 160, height: 32 }, // High Right Exit Platform
+      { x: 180, y: 385, width: 80, height: 32 },  // Stepping Ledge
+      { x: 100, y: 310, width: 120, height: 32 }, // High Left Switch Ledge
+      { x: 420, y: 460, width: 160, height: 32 }, // Middle Platform
+      { x: 680, y: 460, width: 160, height: 32 }, // Exit Ledge
     ],
     switches: [
-      { id: 'switch-1', x: 300, y: 408 },
+      { id: 'switch-1', x: 80, y: 278 },
     ],
     gates: [
-      { id: 'gate-1', x: 570, y: 308, controlIds: ['switch-1'], mode: 'all' },
+      { id: 'gate-1', x: 260, y: 420, controlIds: ['switch-1'], mode: 'all' },
     ],
-    goalZone: { id: 'goal-1', x: 680, y: 280 },
+    goalZone: { id: 'goal-1', x: 700, y: 412 },
   },
 
   // --- LEVEL 2: Time Relay ---
