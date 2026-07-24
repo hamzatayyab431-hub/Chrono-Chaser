@@ -357,14 +357,18 @@ export class LevelScene extends Phaser.Scene {
         .setOrigin(0.5);
 
       bg.on('pointerdown', () => {
-        bg.setAlpha(0.9);
-        bg.setStrokeStyle(2, 0x00ff66);
+        bg.setAlpha(0.95);
+        bg.setStrokeStyle(2.5, 0x00ff66);
+        bg.setScale(1.15);
+        text.setScale(1.15);
         onDown();
       });
 
       const handleRelease = () => {
         bg.setAlpha(0.6);
         bg.setStrokeStyle(1.5, 0x00f0ff);
+        bg.setScale(1.0);
+        text.setScale(1.0);
         onUp();
       };
 
