@@ -84,8 +84,8 @@ export class LevelScene extends Phaser.Scene {
 
     this.generateDynamicTextures();
 
-    // Background
-    this.add.rectangle(400, 300, 800, 600, 0x121026);
+    // Synthwave Parallax Grid & Starfield Background
+    this.createSynthwaveBackground();
 
     // Systems & Managers
     this.loopManager = new LoopManager();
@@ -768,5 +768,41 @@ export class LevelScene extends Phaser.Scene {
     this.loopText.setText(`LOOP: ${this.loopCount} of ${this.levelData.maxLoops}`);
     this.ghostCountText.setText(`GHOSTS: ${this.ghosts.length}`);
     this.ticksText.setText(`TICKS: ${this.currentTick}`);
+  }
+
+  private createSynthwaveBackground(): void {
+    // Base dark background
+    this.add.rectangle(400, 300, 800, 600, 0x09071b);
+
+    // Subdued grid pattern
+    const g = this.add.graphics();
+    g.lineStyle(1, 0x1d183d, 0.4);
+
+    for (let x = 0; x <= 800; x += 40) {
+      g.lineBetween(x, 0, x, 600);
+    }
+    for (let y = 0; y <= 600; y += 40) {
+      g.lineBetween(0, y, 800, y);
+    }
+
+    // Twinkling stars
+    for (let i = 0; i < 30; i++) {
+      const star = this.add.circle(
+        Phaser.Math.Between(40, 760),
+        Phaser.Math.Between(40, 560),
+        Phaser.Math.Between(1, 2.5),
+        0x7b52ff,
+        0.5
+      );
+
+      this.tweens.add({
+        targets: star,
+        alpha: { from: 0.2, to: 0.8 },
+        duration: Phaser.Math.Between(1200, 3000),
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
   }
 }
