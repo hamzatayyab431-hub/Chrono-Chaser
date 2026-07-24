@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { PersistentState } from '../systems/PersistentState';
+import { SoundEffects } from '../systems/SoundEffects';
 
 export interface GateConfig {
   id: string;
@@ -57,6 +58,7 @@ export class Gate extends Phaser.Physics.Arcade.Sprite {
             this.controlIds.every((cId) => this.persistentState.getState(cId));
 
       if (conditionMet) {
+        SoundEffects.playGateOpen();
         this.persistentState.setState(this.id, true);
         isOpen = true;
       }

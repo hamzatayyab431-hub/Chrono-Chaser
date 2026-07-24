@@ -184,6 +184,33 @@ export class SoundEffects {
     }
   }
 
+  public static playGateOpen(): void {
+    const ctx = SoundEffects.getContext();
+    if (!ctx) return;
+
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.18);
+
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.18);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.18);
+
+      SoundEffects.trackOscillator(osc);
+    } catch {
+      // Ignore audio context restrictions
+    }
+  }
+
   public static playFail(): void {
     const ctx = SoundEffects.getContext();
     if (!ctx) return;
