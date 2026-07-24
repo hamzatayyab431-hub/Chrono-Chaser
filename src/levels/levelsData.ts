@@ -90,7 +90,7 @@ export const LEVELS_DATA: LevelData[] = [
   {
     id: 'level-04',
     name: 'Triple Synchrony',
-    description: 'Coordinate three past selves to trigger a switch and two pressure plates simultaneously.',
+    description: 'L1: Flip switch. L2: Enter inner chamber & hold Plate A. L3: Hold Plate B on floor. L4: Escape!',
     loopDurationSeconds: 15,
     maxLoops: 4,
     spawnPoint: { x: 100, y: 410 },
@@ -100,21 +100,25 @@ export const LEVELS_DATA: LevelData[] = [
       { x: 784, y: 300, width: 32, height: 600 },
       { x: 400, y: 16, width: 800, height: 32 },
       { x: 100, y: 460, width: 140, height: 32 }, // Spawn Platform
-      { x: 120, y: 300, width: 140, height: 32 }, // High Left Ledge
-      { x: 350, y: 440, width: 200, height: 32 }, // Middle Ledge
-      { x: 650, y: 340, width: 160, height: 32 }, // Exit Platform
+      { x: 180, y: 385, width: 80, height: 32 },  // Stepping Ledge
+      { x: 100, y: 310, width: 120, height: 32 }, // High Left Switch Ledge
+      { x: 360, y: 460, width: 160, height: 32 }, // Inner Chamber Floor
+      { x: 440, y: 350, width: 32, height: 260 }, // Inner Chamber Wall
+      { x: 490, y: 440, width: 100, height: 32 }, // Climbing Ledge
+      { x: 660, y: 350, width: 180, height: 32 }, // Exit Ledge
     ],
     switches: [
-      { id: 'sw-triple', x: 100, y: 268 },
+      { id: 'sw-triple', x: 100, y: 278 },
     ],
     pressurePlates: [
-      { id: 'plate-tri-a', x: 350, y: 428 },
-      { id: 'plate-tri-b', x: 500, y: 562 },
+      { id: 'plate-tri-a', x: 360, y: 448 },
+      { id: 'plate-tri-b', x: 540, y: 572 },
     ],
     gates: [
-      { id: 'gate-triple', x: 580, y: 308, controlIds: ['sw-triple', 'plate-tri-a', 'plate-tri-b'], mode: 'all' },
+      { id: 'gate-triple-1', x: 260, y: 420, controlIds: ['sw-triple'], mode: 'all' },
+      { id: 'gate-triple-exit', x: 590, y: 302, controlIds: ['plate-tri-a', 'plate-tri-b'], mode: 'all' },
     ],
-    goalZone: { id: 'goal-4', x: 700, y: 280 },
+    goalZone: { id: 'goal-4', x: 710, y: 302 },
   },
 
   // --- LEVEL 5: Chrono Master (Finale) ---
