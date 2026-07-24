@@ -40,10 +40,9 @@ The player controls a character trapped in a room that resets every **15 seconds
 ## ⚙️ Technical Architecture
 
 - **Deterministic Fixed-Timestep Physics Loop**: Fixed 60Hz Arcade Physics update loop (`customUpdate: true`) with manual `world.update(0, dt)` and `postUpdate()` integration.
-- **Accumulator Safety Clamping**: Capped to max 5 steps per frame to prevent lag spirals ("spiral of death").
-- **Shared Movement Logic**: `Ghost` extends `Player` directly, guaranteeing 100% identical physics simulation between live player and ghosts.
-- **One-Way Latch Mechanics**: Switches and multi-condition gates latch open permanently once triggered, enforcing the design rule that level geometry only ever opens up.
-- **Zero-Dependency Web Audio Synthesis**: Synthesizes retro chiptune SFX dynamically using HTML5 Web Audio API (jump, switch click, plate hum, rewind sweep, victory arpeggio, failure buzz).
+- **Star Performance Ratings**: 1-to-3 star performance evaluation based on loop efficiency and speed, persisted across sessions in local storage.
+- **Dynamic Particle Effects**: Micro-particle explosions for jump dust bursts, switch activations, and portal victory fireworks.
+- **Zero-Dependency Web Audio Synthesis**: Synthesizes retro synth SFX dynamically using HTML5 Web Audio API (jump, switch click, plate hum, gate unlock sweep, rewind sweep, victory arpeggio, failure buzz).
 
 ---
 

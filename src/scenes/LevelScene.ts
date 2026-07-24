@@ -287,7 +287,7 @@ export class LevelScene extends Phaser.Scene {
     };
 
     // Header Panel Background with Glassmorphism & Dual Neon Border
-    const hudBg = this.add.rectangle(400, 30, 760, 42, 0x070514, 0.9).setStrokeStyle(1.5, 0x00f0ff);
+    this.add.rectangle(400, 30, 760, 42, 0x070514, 0.9).setStrokeStyle(1.5, 0x00f0ff);
     this.add.rectangle(400, 30, 756, 38, 0x120c30, 0.4).setStrokeStyle(1, 0x7b52ff, 0.6);
 
     this.levelTitleText = this.add.text(30, 21, `L${this.currentLevelIndex + 1}: ${this.levelData.name}`, {
