@@ -29,17 +29,17 @@ The player controls a character trapped in a room that resets every **15 seconds
 
 ## 🧩 Handcrafted Levels (1 - 5)
 
-1. **Level 1: First Steps** — Single switch and gate tutorial (Max Loops: 2).
-2. **Level 2: Time Relay** — Sprint to a distant gate while your past ghost flips a far-left switch (Max Loops: 2).
-3. **Level 3: Dual Pressure** — Step on two separate pressure plates simultaneously with a ghost to open the goal gate (Max Loops: 3).
-4. **Level 4: Triple Synchrony** — Coordinate 3 past selves across 3 loops to activate a switch and two pressure plates at once (Max Loops: 4).
-5. **Level 5: Chrono Master (Finale)** — Master nested outer barriers and a 4-ghost simultaneous pressure plate puzzle (Max Loops: 4).
+1. **Level 1: First Steps** — Flip the high left switch in Loop 1 so your Loop 2 self can pass through the unlocked gate to exit (Max Loops: 2).
+2. **Level 2: Time Relay** — Coordinate real-time pressure plate timing: Ghost 1 holds Plate 1 while Player 2 sprints past the timed gate (Max Loops: 2).
+3. **Level 3: Dual Pressure** — Simultaneous multi-point holding: Ghost 1 holds Plate A and Ghost 2 holds Plate B so Player 3 can reach the exit (Max Loops: 3).
+4. **Level 4: Triple Synchrony** — 3-phase chain reaction: Ghost 1 opens Chamber 1, Ghost 2 holds Plate A inside, Ghost 3 holds Plate B on floor, and Player 4 escapes (Max Loops: 4).
+5. **Level 5: Chrono Master (Finale)** — 4-loop master challenge: Coordinate a 3-ghost relay across 3 nested chambers with simultaneous dual pressure plate locking (Max Loops: 4).
 
 ---
 
 ## ⚙️ Technical Architecture
 
-- **Deterministic Fixed-Timestep Physics Loop**: Fixed 60Hz Arcade Physics update loop (`customUpdate: true`) decoupled from render framerate.
+- **Deterministic Fixed-Timestep Physics Loop**: Fixed 60Hz Arcade Physics update loop (`customUpdate: true`) with manual `world.update(0, dt)` and `postUpdate()` integration.
 - **Accumulator Safety Clamping**: Capped to max 5 steps per frame to prevent lag spirals ("spiral of death").
 - **Shared Movement Logic**: `Ghost` extends `Player` directly, guaranteeing 100% identical physics simulation between live player and ghosts.
 - **One-Way Latch Mechanics**: Switches and multi-condition gates latch open permanently once triggered, enforcing the design rule that level geometry only ever opens up.
