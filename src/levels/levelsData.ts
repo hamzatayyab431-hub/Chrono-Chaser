@@ -33,7 +33,7 @@ export const LEVELS_DATA: LevelData[] = [
   {
     id: 'level-02',
     name: 'Time Relay',
-    description: 'The switch is far away. Have your past self flip the switch while you sprint to the gate.',
+    description: 'Loop 1: Hold the high left plate from 6s-15s. Loop 2: Sprint past the gate when it opens at 6s.',
     loopDurationSeconds: 15,
     maxLoops: 2,
     spawnPoint: { x: 100, y: 410 },
@@ -43,17 +43,18 @@ export const LEVELS_DATA: LevelData[] = [
       { x: 784, y: 300, width: 32, height: 600 },
       { x: 400, y: 16, width: 800, height: 32 },
       { x: 100, y: 460, width: 140, height: 32 }, // Spawn Platform
-      { x: 120, y: 320, width: 140, height: 32 }, // High Left Ledge
-      { x: 380, y: 440, width: 180, height: 32 }, // Middle Ledge
-      { x: 650, y: 460, width: 160, height: 32 }, // Exit Platform
+      { x: 180, y: 385, width: 80, height: 32 },  // Stepping Ledge
+      { x: 100, y: 310, width: 120, height: 32 }, // High Left Plate Ledge
+      { x: 400, y: 460, width: 240, height: 32 }, // Middle Corridor
+      { x: 680, y: 460, width: 140, height: 32 }, // Exit Platform
     ],
-    switches: [
-      { id: 'switch-relay', x: 100, y: 288 },
+    pressurePlates: [
+      { id: 'plate-relay', x: 100, y: 298 },
     ],
     gates: [
-      { id: 'gate-relay', x: 580, y: 428, controlIds: ['switch-relay'], mode: 'all' },
+      { id: 'gate-relay', x: 550, y: 420, controlIds: ['plate-relay'], mode: 'all' },
     ],
-    goalZone: { id: 'goal-2', x: 700, y: 400 },
+    goalZone: { id: 'goal-2', x: 700, y: 412 },
   },
 
   // --- LEVEL 3: Dual Pressure ---
