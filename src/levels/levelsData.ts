@@ -61,7 +61,7 @@ export const LEVELS_DATA: LevelData[] = [
   {
     id: 'level-03',
     name: 'Dual Pressure',
-    description: 'Requires two bodies standing on separate pressure plates at the same time.',
+    description: 'Loop 1: Stand on Plate A (top left). Loop 2: Stand on Plate B (floor). Loop 3: Reach exit while both are held.',
     loopDurationSeconds: 15,
     maxLoops: 3,
     spawnPoint: { x: 100, y: 410 },
@@ -71,17 +71,19 @@ export const LEVELS_DATA: LevelData[] = [
       { x: 784, y: 300, width: 32, height: 600 },
       { x: 400, y: 16, width: 800, height: 32 },
       { x: 100, y: 460, width: 140, height: 32 }, // Spawn Platform
-      { x: 350, y: 440, width: 200, height: 32 }, // Middle Ledge
-      { x: 650, y: 340, width: 160, height: 32 }, // Exit Ledge
+      { x: 220, y: 385, width: 80, height: 32 },  // Stepping Ledge
+      { x: 120, y: 310, width: 140, height: 32 }, // High Left Plate A Ledge
+      { x: 460, y: 440, width: 120, height: 32 }, // Middle Climbing Ledge
+      { x: 660, y: 350, width: 180, height: 32 }, // Exit Ledge
     ],
     pressurePlates: [
-      { id: 'plate-a', x: 350, y: 428 },
-      { id: 'plate-b', x: 520, y: 562 },
+      { id: 'plate-a', x: 120, y: 298 },
+      { id: 'plate-b', x: 400, y: 572 },
     ],
     gates: [
-      { id: 'gate-dual', x: 580, y: 308, controlIds: ['plate-a', 'plate-b'], mode: 'all' },
+      { id: 'gate-dual', x: 590, y: 302, controlIds: ['plate-a', 'plate-b'], mode: 'all' },
     ],
-    goalZone: { id: 'goal-3', x: 700, y: 280 },
+    goalZone: { id: 'goal-3', x: 710, y: 302 },
   },
 
   // --- LEVEL 4: Triple Synchrony ---
