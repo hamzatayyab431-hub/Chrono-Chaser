@@ -33,13 +33,20 @@ export class PersistentState {
     this.listeners.forEach((listener) => listener(key, value));
   }
 
-  // --- PERSISTENT LEVEL PROGRESSION (LOCAL STORAGE) ---
-  public static markLevelCompleted(levelId: string): void {
+  // --- PERSISTENT LEVEL PROGRESSION & STAR RATINGS (LOCAL STORAGE) ---
+  public static markLevelCompleted(levelId: string, stars: number = 3): void {
     try {
       const completed = PersistentState.getCompletedLevels();
       if (!completed.includes(levelId)) {
         completed.push(levelId);
         localStorage.setItem('chrono_chaser_completed_levels', JSON.stringify(completed));
+      }
+
+      const currentStars = PersistentState.getLevelStars(levelId);
+      if (stars > currentStars) {
+        const starMap = PersistentState.getAllStarsMap();
+        starMap[levelId] = stars;
+        localStorage.setItem('chrono_chaser_level_stars', JSON.stringify(starMap));
       }
     } catch {
       // Fallback if localStorage is restricted
@@ -57,5 +64,19 @@ export class PersistentState {
 
   public static isLevelCompleted(levelId: string): boolean {
     return PersistentState.getCompletedLevels().includes(levelId);
+  }
+
+  public static getLevelStars(levelId: string): number {
+    const starMap = PersistentState.getAllStarsMap();
+    return starMap[levelId] || 0;
+  }
+
+  private static getAllStarsMap(): Record<string, number> {
+    try {
+      const data = localStorage.getItem('chrono_chaser_level_stars');
+      return data ? JSON.parse(data) : {};
+    } catch {
+      return {};
+    }
   }
 }

@@ -658,8 +658,15 @@ export class LevelScene extends Phaser.Scene {
   private triggerLevelWin(): void {
     this.isLevelComplete = true;
 
-    // Mark level as completed in persistent storage
-    PersistentState.markLevelCompleted(this.levelData.id);
+    // Calculate performance star rating based on loop efficiency
+    let stars = 3;
+    if (this.loopCount >= this.levelData.maxLoops) {
+      stars = 2;
+    }
+    const starStr = '⭐'.repeat(stars);
+
+    // Mark level as completed with star rating in persistent storage
+    PersistentState.markLevelCompleted(this.levelData.id, stars);
 
     // SFX, Camera Shake, and Victory Particles
     SoundEffects.playWin();
@@ -668,8 +675,8 @@ export class LevelScene extends Phaser.Scene {
 
     // Show Victory Modal
     this.showModal(
-      '🎉 LEVEL SOLVED!',
-      `You completed '${this.levelData.name}' in Loop ${this.loopCount} of ${this.levelData.maxLoops}!`,
+      `🎉 LEVEL SOLVED! ${starStr}`,
+      `You completed '${this.levelData.name}' in Loop ${this.loopCount} of ${this.levelData.maxLoops}! Rating: ${stars}/3 Stars.`,
       0x00FF66,
       true
     );
