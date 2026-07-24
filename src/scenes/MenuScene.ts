@@ -139,12 +139,21 @@ export class MenuScene extends Phaser.Scene {
         color: '#A0A0C0',
       });
 
-      // Completion / Max Loops Badge
+      // Completion / Star Rating & Max Loops Badge
+      const stars = PersistentState.getLevelStars(level.id);
+      const starText = stars > 0 ? '⭐'.repeat(stars) : '—';
+
       if (isCompleted) {
-        this.add.text(560, y, 'CLEARED ✓', {
+        this.add.text(560, y - 8, 'CLEARED ✓', {
           fontFamily: 'monospace',
           fontSize: '12px',
           color: '#00FF66',
+        }).setOrigin(0.5);
+
+        this.add.text(560, y + 10, starText, {
+          fontFamily: 'monospace',
+          fontSize: '11px',
+          color: '#FFDF00',
         }).setOrigin(0.5);
       } else {
         this.add.text(560, y, `CAP: ${level.maxLoops} L`, {
