@@ -573,7 +573,8 @@ export class LevelScene extends Phaser.Scene {
       });
 
       // --- STEP 2: Step physics world simulation forward by 1/60s ---
-      this.physics.world.step(this.fixedDeltaTime / 1000);
+      this.physics.world.update(0, this.fixedDeltaTime);
+      this.physics.world.postUpdate();
 
       // --- STEP 3: Post-step Overlaps & Goal Check ---
       this.evaluateInteractables(liveInput, ghostInputs);
