@@ -63,10 +63,35 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.jumpBufferTicks = 0;
       this.coyoteTicks = 0;
 
+      this.spawnJumpDust();
+
       // Play Jump Sound Effect if audio is enabled for this actor
       if (playAudio) {
         SoundEffects.playJump();
       }
+    }
+  }
+
+  private spawnJumpDust(): void {
+    if (!this.scene) return;
+    const px = this.x;
+    const py = this.y + 20;
+
+    for (let i = 0; i < 8; i++) {
+      const p = this.scene.add.circle(px, py, Phaser.Math.Between(2, 4), 0x00F0FF, 0.8);
+      const angle = Phaser.Math.Between(200, 340);
+      const speed = Phaser.Math.Between(40, 120);
+
+      this.scene.tweens.add({
+        targets: p,
+        x: px + Math.cos(Phaser.Math.DegToRad(angle)) * speed,
+        y: py + Math.sin(Phaser.Math.DegToRad(angle)) * speed,
+        alpha: 0,
+        scale: 0.2,
+        duration: 350,
+        ease: 'Quad.easeOut',
+        onComplete: () => p.destroy(),
+      });
     }
   }
 
