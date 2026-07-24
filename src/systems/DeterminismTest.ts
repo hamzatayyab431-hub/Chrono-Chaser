@@ -39,6 +39,12 @@ export class DeterminismTest {
     playerA.setVisible(false);
     playerB.setVisible(false);
 
+    // Isolate bodies into testWorld instead of main scene world
+    scene.physics.world.remove(playerA.body as Phaser.Physics.Arcade.Body);
+    scene.physics.world.remove(playerB.body as Phaser.Physics.Arcade.Body);
+    testWorld.add(playerA.body as Phaser.Physics.Arcade.Body);
+    testWorld.add(playerB.body as Phaser.Physics.Arcade.Body);
+
     // Create a temporary platform for isolated test world
     const ground = scene.add.rectangle(400, 550, 800, 40, 0x555555);
     testWorld.enable(ground, Phaser.Physics.Arcade.STATIC_BODY);
@@ -50,7 +56,8 @@ export class DeterminismTest {
     playerA.resetTo(startX, startY);
     for (let i = 0; i < inputs.length; i++) {
       playerA.physicsStep(inputs[i], false);
-      testWorld.step(1 / 60);
+      testWorld.update(0, 1000 / 60);
+      testWorld.postUpdate();
     }
 
     const posA = {
@@ -64,7 +71,8 @@ export class DeterminismTest {
     playerB.resetTo(startX, startY);
     for (let i = 0; i < inputs.length; i++) {
       playerB.physicsStep(inputs[i], false);
-      testWorld.step(1 / 60);
+      testWorld.update(0, 1000 / 60);
+      testWorld.postUpdate();
     }
 
     const posB = {
