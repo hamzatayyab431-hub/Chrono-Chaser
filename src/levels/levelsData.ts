@@ -125,33 +125,37 @@ export const LEVELS_DATA: LevelData[] = [
   {
     id: 'level-05',
     name: 'Chrono Master',
-    description: 'The master challenge. Navigate nested barriers and coordinate a 4-ghost army to escape.',
+    description: 'L1: Flip Sw 1. L2: Flip Sw 2 & hold Plate B. L3: Enter inner chamber & hold Plate A. L4: Master escape!',
     loopDurationSeconds: 15,
     maxLoops: 4,
-    spawnPoint: { x: 100, y: 430 },
+    spawnPoint: { x: 100, y: 410 },
     platforms: [
       { x: 400, y: 584, width: 800, height: 32 },
       { x: 16, y: 300, width: 32, height: 600 },
       { x: 784, y: 300, width: 32, height: 600 },
       { x: 400, y: 16, width: 800, height: 32 },
-      { x: 100, y: 480, width: 140, height: 32 }, // Spawn Platform
-      { x: 140, y: 340, width: 140, height: 32 }, // Left Ledge
-      { x: 300, y: 350, width: 32, height: 260 }, // Outer Wall Barrier Column
-      { x: 380, y: 440, width: 180, height: 32 }, // Middle Ledge
-      { x: 650, y: 340, width: 160, height: 32 }, // Master Exit Platform
+      { x: 100, y: 460, width: 140, height: 32 }, // Spawn Platform
+      { x: 180, y: 385, width: 80, height: 32 },  // Stepping Ledge
+      { x: 100, y: 310, width: 120, height: 32 }, // High Left Ledge (Sw 1)
+      { x: 340, y: 460, width: 120, height: 32 }, // Chamber 1 Floor (Sw 2)
+      { x: 410, y: 350, width: 32, height: 260 }, // Wall 1
+      { x: 500, y: 460, width: 120, height: 32 }, // Chamber 2 Floor (Plate A)
+      { x: 570, y: 350, width: 32, height: 260 }, // Wall 2
+      { x: 670, y: 350, width: 160, height: 32 }, // Master Exit Platform
     ],
     switches: [
-      { id: 'sw-finale-1', x: 120, y: 308 },
-      { id: 'sw-finale-2', x: 380, y: 408 },
+      { id: 'sw-fin-1', x: 100, y: 278 },
+      { id: 'sw-fin-2', x: 340, y: 428 },
     ],
     pressurePlates: [
-      { id: 'plate-fin-a', x: 250, y: 562 },
-      { id: 'plate-fin-b', x: 500, y: 562 },
+      { id: 'plate-fin-a', x: 500, y: 448 },
+      { id: 'plate-fin-b', x: 260, y: 572 },
     ],
     gates: [
-      { id: 'gate-fin-outer', x: 300, y: 520, controlIds: ['sw-finale-1'], mode: 'all' },
-      { id: 'gate-fin-inner', x: 580, y: 308, controlIds: ['sw-finale-2', 'plate-fin-a', 'plate-fin-b'], mode: 'all' },
+      { id: 'gate-fin-outer', x: 260, y: 420, controlIds: ['sw-fin-1'], mode: 'all' },
+      { id: 'gate-fin-mid', x: 410, y: 420, controlIds: ['sw-fin-2'], mode: 'all' },
+      { id: 'gate-fin-master', x: 570, y: 302, controlIds: ['plate-fin-a', 'plate-fin-b'], mode: 'all' },
     ],
-    goalZone: { id: 'goal-5', x: 700, y: 280 },
+    goalZone: { id: 'goal-5', x: 710, y: 302 },
   },
 ];
