@@ -286,30 +286,31 @@ export class LevelScene extends Phaser.Scene {
       color: '#00F0FF',
     };
 
-    // Header Panel Background
-    this.add.rectangle(400, 30, 760, 40, 0x0a081d, 0.85).setStrokeStyle(1, 0x7b52ff);
+    // Header Panel Background with Glassmorphism & Dual Neon Border
+    const hudBg = this.add.rectangle(400, 30, 760, 42, 0x070514, 0.9).setStrokeStyle(1.5, 0x00f0ff);
+    this.add.rectangle(400, 30, 756, 38, 0x120c30, 0.4).setStrokeStyle(1, 0x7b52ff, 0.6);
 
-    this.levelTitleText = this.add.text(25, 22, `L${this.currentLevelIndex + 1}: ${this.levelData.name}`, {
+    this.levelTitleText = this.add.text(30, 21, `L${this.currentLevelIndex + 1}: ${this.levelData.name}`, {
       fontFamily: 'monospace',
       fontSize: '15px',
       color: '#00FF66',
     });
 
-    this.timerText = this.add.text(260, 22, 'TIME: 15.00s', {
+    this.timerText = this.add.text(260, 21, 'TIME: 15.00s', {
       fontFamily: 'monospace',
       fontSize: '15px',
       color: '#FFDF00',
     });
 
-    this.loopText = this.add.text(410, 22, `LOOP: 1 of ${this.levelData.maxLoops}`, textStyle);
-    this.ghostCountText = this.add.text(540, 22, 'GHOSTS: 0', {
+    this.loopText = this.add.text(410, 21, `LOOP: 1 of ${this.levelData.maxLoops}`, textStyle);
+    this.ghostCountText = this.add.text(540, 21, 'GHOSTS: 0', {
       fontFamily: 'monospace',
       fontSize: '14px',
       color: '#CE42FF',
     });
-    this.ticksText = this.add.text(660, 22, 'TICKS: 0', textStyle);
+    this.ticksText = this.add.text(660, 21, 'TICKS: 0', textStyle);
 
-    this.testStatusText = this.add.text(25, 75, 'Determinism Check: Ready', {
+    this.testStatusText = this.add.text(30, 75, 'Determinism Check: Ready', {
       fontFamily: 'monospace',
       fontSize: '12px',
       color: '#00FF66',
